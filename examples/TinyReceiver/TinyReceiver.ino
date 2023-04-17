@@ -151,7 +151,7 @@ void loop() {
 }
 
 /*
- * This is the function is called if a complete command was received
+ * This is the function, which is called if a complete command was received
  * It runs in an ISR context with interrupts enabled, so functions like delay() etc. should work here
  */
 #if defined(ESP8266) || defined(ESP32)
