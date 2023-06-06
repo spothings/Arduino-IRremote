@@ -398,7 +398,7 @@ http://www.harctoolbox.org/IR-resources.html
 
 
 # Tiny NEC receiver and sender
-For applications only requiring NEC protocol, there is a special receiver / sender included,<br/>
+For applications only requiring NEC or FAST -see below- protocol, there is a special receiver / sender included,<br/>
 which has very **small code size of 500 bytes and does NOT require any timer**.
 
 Check out the [TinyReceiver](https://github.com/Arduino-IRremote/Arduino-IRremote#tinyreceiver--tinysender) and [IRDispatcherDemo](https://github.com/Arduino-IRremote/Arduino-IRremote#irdispatcherdemo) examples.<br/>
@@ -406,6 +406,8 @@ Take care to include `TinyIRReceiver.hpp` or `TinyIRSender.hpp` instead of `IRre
 
 ### TinyIRReceiver usage
 ```c++
+//#define USE_ONKYO_PROTOCOL    // Like NEC, but take the 16 bit address and command each as one 16 bit value and not as 8 bit normal and 8 bit inverted value.
+//#define USE_FAST_PROTOCOL     // Use FAST protocol instead of NEC / ONKYO
 #include "TinyIRReceiver.hpp"
 
 void setup() {
@@ -431,6 +433,8 @@ void setup() {
 
 void loop() {}
 ```
+
+Another tiny receiver and sender **supporting more protocols** can be found [here](https://github.com/LuisMiCa/IRsmallDecoder).
 
 # The FAST protocol
 The FAST protocol is a proprietary modified JVC protocol **without address, with parity and with a shorter header**.
@@ -468,6 +472,8 @@ void setup() {
 void loop() {}
 ```
 <br/>
+
+The FAST protocol can be received by IRremote and TinyIRReceiver.
 
 # FAQ and hints
 
