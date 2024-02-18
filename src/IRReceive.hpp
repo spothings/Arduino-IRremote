@@ -407,10 +407,11 @@ bool IRrecv::isIdle() {
 }
 
 /**
- * Restart the ISR (Interrupt Service Routine) state machine, to enable receiving of the next IR frame
+ * Restart the ISR (Interrupt Service Routine) state machine, to enable receiving of the next IR frame.
+ * Counting of gap timing is independent of StateForISR and therefore independent of call time of resume().
  */
 void IRrecv::resume() {
-    // check allows to call resume at arbitrary places or more than once
+    // This check allows to call resume at arbitrary places or more than once
     if (irparams.StateForISR == IR_REC_STATE_STOP) {
         irparams.StateForISR = IR_REC_STATE_IDLE;
     }
@@ -1242,6 +1243,7 @@ uint32_t IRrecv::getTotalDurationOfRawData() {
 /**
  * Function to print values and flags of IrReceiver.decodedIRData in one line.
  * Ends with println().
+ * !!!Attention: The result differs on a 8 bit or 32 bit platform!!!
  *
  * @param aSerial The Print object on which to write, for Arduino you can use &Serial.
  */
@@ -1249,15 +1251,16 @@ void IRrecv::printIRSendUsage(Print *aSerial) {
     if (decodedIRData.protocol != UNKNOWN
             && (decodedIRData.flags & (IRDATA_FLAGS_IS_AUTO_REPEAT | IRDATA_FLAGS_IS_REPEAT)) == 0x00) {
 #if defined(DECODE_DISTANCE_WIDTH)
-        aSerial->print(F("Send with:"));
         uint_fast8_t tNumberOfArrayData = 0;
         if (decodedIRData.protocol == PULSE_DISTANCE || decodedIRData.protocol == PULSE_WIDTH) {
 #  if __INT_WIDTH__ < 32
+            aSerial->print(F("Send on a 8 bit platform with:"));
             tNumberOfArrayData = ((decodedIRData.numberOfBits - 1) / 32) + 1;
             if(tNumberOfArrayData > 1) {
                 aSerial->println();
                 aSerial->print(F("    uint32_t tRawData[]={0x"));
 #  else
+                aSerial->print(F("Send on a 32 bit platform with:"));
             tNumberOfArrayData = ((decodedIRData.numberOfBits - 1) / 64) + 1;
             if(tNumberOfArrayData > 1) {
                 aSerial->println();
@@ -1357,6 +1360,11 @@ void IRrecv::printIRSendUsage(Print *aSerial) {
         aSerial->print(F(");"));
         aSerial->println();
     }
+#if defined(DECODE_DISTANCE_WIDTH)
+    else {
+        aSerial->print(F("Send with:"));
+    }
+#endif
 }
 
 /**
